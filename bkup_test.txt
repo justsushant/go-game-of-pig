@@ -72,41 +72,31 @@ func TestSimulateGame(t *testing.T) {
 
 		return Score(0)
 	}
-	game := GameOfPig{
-		winScore: Score(100),
-		p1Strategy: Score(10),
-		p2Strategy: Score(15),
-		scoreCard: ScoreCard{},
-	}
-	game.simulateGame(dummySimulateTurn, scoreCard)
+	game := GameOfPig{}
+	game.simulateGame(dummySimulateTurn, p1Strategy, p2Strategy, scoreCard)
 
 	if scoreCard.player2WinCount != 1 {
 		t.Errorf("Expected player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", scoreCard.player1WinCount, scoreCard.player2WinCount)
 	}
 }
 
+func TestSeriesOfGames(t *testing.T) {
+	game := DummyGameOfPig{
+		winScore: Score(100),
+		p1Strategy: Score(10),
+		p2Strategy: Score(15),
+		scoreCard: ScoreCard{},
+	}
 
-func TestSimulate10Games(t *testing.T) {
+	gameCount := 10
 	
+	got := simulateSeriesOfGames(game, gameCount)
+	want := ScoreCard{player1WinCount: 6, player2WinCount: 4}
+
+	if got != want {
+		t.Errorf("Expected ScoreCard => Player1: %d\tPlayer2: %d\nGot ScoreCard => Player1: %d\tPlayer2: %d", want.player1WinCount, want.player2WinCount, got.player1WinCount, got.player2WinCount)
+	}
 }
-
-// func TestSeriesOfGames(t *testing.T) {
-// 	game := DummyGameOfPig{
-// 		winScore: Score(100),
-// 		p1Strategy: Score(10),
-// 		p2Strategy: Score(15),
-// 		scoreCard: ScoreCard{},
-// 	}
-
-// 	gameCount := 10
-	
-// 	got := simulateSeriesOfGames(game, gameCount)
-// 	want := ScoreCard{player1WinCount: 6, player2WinCount: 4}
-
-// 	if got != want {
-// 		t.Errorf("Expected ScoreCard => Player1: %d\tPlayer2: %d\nGot ScoreCard => Player1: %d\tPlayer2: %d", want.player1WinCount, want.player2WinCount, got.player1WinCount, got.player2WinCount)
-// 	}
-// }
 // func TestSeriesOfGames(t *testing.T) {
 // 	gameCount := 10
 // 	// scoreCard := &ScoreCard{}
