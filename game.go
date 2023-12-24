@@ -19,12 +19,12 @@ func(s ScoreCard) String() string {
 	return fmt.Sprintf("Player1: %d, Player2: %d", s.player1WinCount, s.player2WinCount)
 }
 
-// type GameOfPig struct {
-// 	winScore Score
-// 	scoreCard ScoreCard
-// 	p1Strategy int
-// 	p2Strategy int
-// }
+type GameOfPig struct {
+	winScore Score
+	p1Strategy Score
+	p2Strategy Score
+	scoreCard ScoreCard
+}
 
 type NumGenerator interface {
 	Generate() int
@@ -38,7 +38,7 @@ func (d *DiceSimulator) Generate() int {
 	return rand.Intn(7)
 }
 
-func simulateTurn(pStrategy Score, numGen NumGenerator) Score {
+func(game GameOfPig) simulateTurn(pStrategy Score, numGen NumGenerator) Score {
 	var turnTotal Score
 
 	for turnTotal <= pStrategy {
@@ -54,7 +54,7 @@ func simulateTurn(pStrategy Score, numGen NumGenerator) Score {
 	return Score(turnTotal)
 }
 
-func simulateGame(simulateTurn func(Score, NumGenerator) Score, p1Strategy, p2Strategy Score, scoreCard *ScoreCard) {
+func(game *GameOfPig) simulateGame(simulateTurn func(Score, NumGenerator) Score, p1Strategy, p2Strategy Score, scoreCard *ScoreCard) {
 	numGen := &DiceSimulator{seed: time.Now().UnixNano()}
 	var p1Score, p2Score Score
 
@@ -75,21 +75,27 @@ func simulateGame(simulateTurn func(Score, NumGenerator) Score, p1Strategy, p2St
 	}
 }
 
-func simulateSeriesOfGames(gameCount int, p1Strategy, p2Strategy Score, simulateGame func(func(Score, NumGenerator) Score, Score, Score, *ScoreCard)) ScoreCard {
-	scoreCard := ScoreCard{}
+// func(game *GameOfPig) simulateSeriesOfGames(gameCount int, p1Strategy, p2Strategy Score, simulateGame func(func(Score, NumGenerator) Score, Score, Score, *ScoreCard)) ScoreCard {
+func simulateSeriesOfGames(game GameOfPig, gameCount int) ScoreCard {
+	// scoreCard := ScoreCard{}
 
 	for i := 0; i < gameCount; i++ {
-		simulateGame(simulateTurn, p1Strategy, p2Strategy, &scoreCard)
+		game.simulateGame(game.simulateTurn, game.p1Strategy, game.p2Strategy, &game.scoreCard)
 	}
 
-	return scoreCard
+	return game.scoreCard
 }
 
 func main() {
-	gameCount := 10
-	p1 := Score(15)
-	p2 := Score(20)
+	game := GameOfPig{
+		winScore: Score(100),
+		p1Strategy: Score(15),
+		p2Strategy: Score(20),
+		scoreCard: ScoreCard{},
+	}
 
-	scoreCard := simulateSeriesOfGames(gameCount, p1, p2, simulateGame)
+	gameCount := 10
+
+	scoreCard := simulateSeriesOfGames(game, gameCount)
 	fmt.Println(scoreCard)
 }
