@@ -44,7 +44,7 @@ func TestSimulateTurn(t *testing.T) {
 
 func TestSimulateGame(t *testing.T) {
 	scoreCard := &ScoreCard{}
-	winScore := Score(25)
+	// winScore := Score(25)
 	p1Strategy := 10
 	p2Strategy := 15
 
@@ -58,7 +58,7 @@ func TestSimulateGame(t *testing.T) {
 		return Score(0)
 	}
 
-	simulateGame(dummySimulateTurn, winScore, p1Strategy, p2Strategy, scoreCard)
+	simulateGame(dummySimulateTurn, p1Strategy, p2Strategy, scoreCard)
 
 	if scoreCard.player2WinCount != 1 {
 		t.Errorf("Expected player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", scoreCard.player1WinCount, scoreCard.player2WinCount)
@@ -68,9 +68,18 @@ func TestSimulateGame(t *testing.T) {
 // func TestSeriesOfGames(t *testing.T) {
 // 	gameCount := 10
 // 	scoreCard := &ScoreCard{}
-// 	winScore := Score(25)
-// 	p1Strategy := 10
-// 	p2Strategy := 15
+// 	// winScore := Score(25)
+// 	// p1Strategy := 10
+// 	// p2Strategy := 15
+
+	
+// 	simulateGame := func() {
+// 		if scoreCard.player1WinCount <= 6 {
+// 			scoreCard.player1WinCount++
+// 			return
+// 		}
+// 		scoreCard.player2WinCount++
+// 	}
 
 // 	got := simulateSeriesOfGames(gameCount, simulateGame)
 // 	want := &ScoreCard{player1WinCount: 6, player2WinCount: 4}
