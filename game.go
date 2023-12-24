@@ -6,6 +6,8 @@ import (
 	"math/rand"
 )
 
+const winScore = Score(100)
+
 type Score int
 
 type ScoreCard struct {
@@ -16,6 +18,13 @@ type ScoreCard struct {
 func(s ScoreCard) String() string {
 	return fmt.Sprintf("Player1: %d, Player2: %d", s.player1WinCount, s.player2WinCount)
 }
+
+// type GameOfPig struct {
+// 	winScore Score
+// 	scoreCard ScoreCard
+// 	p1Strategy int
+// 	p2Strategy int
+// }
 
 type NumGenerator interface {
 	Generate() int
@@ -29,10 +38,8 @@ func (d *DiceSimulator) Generate() int {
 	return rand.Intn(7)
 }
 
- const winScore = Score(100)
-
-func simulateTurn(pStrategy int, numGen NumGenerator) Score {
-	var turnTotal int
+func simulateTurn(pStrategy Score, numGen NumGenerator) Score {
+	var turnTotal Score
 
 	for turnTotal <= pStrategy {
 		num := numGen.Generate()
@@ -41,13 +48,13 @@ func simulateTurn(pStrategy int, numGen NumGenerator) Score {
 			return Score(0)
 		}
 
-		turnTotal += num
+		turnTotal += Score(num)
 	}
 
 	return Score(turnTotal)
 }
 
-func simulateGame(simulateTurn func(int, NumGenerator) Score, p1Strategy, p2Strategy int, scoreCard *ScoreCard) {
+func simulateGame(simulateTurn func(Score, NumGenerator) Score, p1Strategy, p2Strategy Score, scoreCard *ScoreCard) {
 	numGen := &DiceSimulator{seed: time.Now().UnixNano()}
 	var p1Score, p2Score Score
 
@@ -68,7 +75,7 @@ func simulateGame(simulateTurn func(int, NumGenerator) Score, p1Strategy, p2Stra
 	}
 }
 
-func simulateSeriesOfGames(gameCount int, p1Strategy, p2Strategy int, simulateGame func(func(int, NumGenerator) Score, int, int, *ScoreCard)) ScoreCard {
+func simulateSeriesOfGames(gameCount int, p1Strategy, p2Strategy Score, simulateGame func(func(Score, NumGenerator) Score, Score, Score, *ScoreCard)) ScoreCard {
 	scoreCard := ScoreCard{}
 
 	for i := 0; i < gameCount; i++ {
@@ -80,8 +87,8 @@ func simulateSeriesOfGames(gameCount int, p1Strategy, p2Strategy int, simulateGa
 
 func main() {
 	gameCount := 10
-	p1 := 15
-	p2 := 20
+	p1 := Score(15)
+	p2 := Score(20)
 
 	scoreCard := simulateSeriesOfGames(gameCount, p1, p2, simulateGame)
 	fmt.Println(scoreCard)

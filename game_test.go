@@ -18,13 +18,13 @@ func (d *DummyDiceSimulator) Generate() int {
 func TestSimulateTurn(t *testing.T) {
 	testCases := []struct{
 		name string
-		holdValue int
+		holdValue Score
 		valueList []int
 		score Score
 	}{
-		{"average case", 7, []int{2, 3, 4, 5}, Score(9)},
-		{"reached hold value first", 15, []int{2, 3, 4, 5, 2, 5}, Score(16)},
-		{"got 1 after scoring a lot", 18, []int{2, 4, 6, 3, 2, 1}, Score(0)},
+		{"average case", Score(7), []int{2, 3, 4, 5}, Score(9)},
+		{"reached hold value first", Score(15), []int{2, 3, 4, 5, 2, 5}, Score(16)},
+		{"got 1 after scoring a lot", Score(18), []int{2, 4, 6, 3, 2, 1}, Score(0)},
 	}
 
 
@@ -45,10 +45,10 @@ func TestSimulateTurn(t *testing.T) {
 func TestSimulateGame(t *testing.T) {
 	scoreCard := &ScoreCard{}
 	// winScore := Score(25)
-	p1Strategy := 10
-	p2Strategy := 15
+	p1Strategy := Score(10)
+	p2Strategy := Score(15)
 
-	dummySimulateTurn := func(strategy int, _ NumGenerator) Score {
+	dummySimulateTurn := func(strategy Score, _ NumGenerator) Score {
 		if strategy == p1Strategy {
 			return Score(3)
 		} else if strategy == p2Strategy {
@@ -69,8 +69,8 @@ func TestSeriesOfGames(t *testing.T) {
 	gameCount := 10
 	// scoreCard := &ScoreCard{}
 	// winScore := Score(100)
-	p1Strategy := 10
-	p2Strategy := 15
+	p1Strategy := Score(10)
+	p2Strategy := Score(15)
 
 
 	// dummySimulateTurn := func(strategy int, _ NumGenerator) Score {
@@ -83,7 +83,7 @@ func TestSeriesOfGames(t *testing.T) {
 	// 	return Score(0)
 	// }
 	
-	dummySimulateGame := func(s func(int, NumGenerator) Score , p1, p2 int, scoreCard *ScoreCard) {
+	dummySimulateGame := func(s func(Score, NumGenerator) Score , p1, p2 Score, scoreCard *ScoreCard) {
 		if scoreCard.player1WinCount < 6 {
 			scoreCard.player1WinCount++
 			return
