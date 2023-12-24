@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"math/rand"
 )
 
@@ -20,7 +21,9 @@ type NumGenerator interface {
 	Generate() int
 }
 
-type DiceSimulator struct {}
+type DiceSimulator struct {
+	seed int64
+}
 
 func (d *DiceSimulator) Generate() int {
 	return rand.Intn(7)
@@ -45,7 +48,7 @@ func simulateTurn(pStrategy int, numGen NumGenerator) Score {
 }
 
 func simulateGame(simulateTurn func(int, NumGenerator) Score, p1Strategy, p2Strategy int, scoreCard *ScoreCard) {
-	numGen := &DiceSimulator{}
+	numGen := &DiceSimulator{seed: time.Now().UnixNano()}
 	var p1Score, p2Score Score
 
 	for {
@@ -65,15 +68,21 @@ func simulateGame(simulateTurn func(int, NumGenerator) Score, p1Strategy, p2Stra
 	}
 }
 
-// func simulateSeriesOfGames(gameCount int, func(func(int, NumGenerator), Score, int, int, *ScoreCard)) {
+func simulateSeriesOfGames(gameCount int, p1Strategy, p2Strategy int, simulateGame func(func(int, NumGenerator) Score, int, int, *ScoreCard)) ScoreCard {
+	scoreCard := ScoreCard{}
 
-// }
+	for i := 0; i < gameCount; i++ {
+		simulateGame(simulateTurn, p1Strategy, p2Strategy, &scoreCard)
+	}
+
+	return scoreCard
+}
 
 func main() {
-	scoreCard := &ScoreCard{}
+	gameCount := 10
 	p1 := 15
 	p2 := 20
 
-	simulateGame(simulateTurn, p1, p2, scoreCard)
+	scoreCard := simulateSeriesOfGames(gameCount, p1, p2, simulateGame)
 	fmt.Println(scoreCard)
 }
