@@ -99,6 +99,9 @@ func TestSimulateMultipleGames(t *testing.T) {
 	gameCount := 3
 	
 	var flag bool
+	dummySimulateTurn := func (_ Score, _ NumGenerator) Score {
+		return Score(0)
+	}
 	dummySimulateGame := func (_ TurnFunc) ScoreCard {
 		if flag {
 			flag = false
@@ -109,8 +112,7 @@ func TestSimulateMultipleGames(t *testing.T) {
 		}
 	}
 
-
-	got := game.SimulateMultipleGames(dummySimulateGame, gameCount)
+	got := game.SimulateMultipleGames(dummySimulateTurn, dummySimulateGame, gameCount)
 	want := ScoreCard{player1WinCount: 2, player2WinCount: 1}
 
 	if got.player1WinCount != want.player1WinCount {

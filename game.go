@@ -78,15 +78,16 @@ func(game *GameOfPig) SimulateGame(simulateTurn TurnFunc) ScoreCard {
 	}
 }
 
-func(game *GameOfPig) SimulateMultipleGames(simulateGame GameFunc, gameCount int) ScoreCard {
+func(game *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame GameFunc, gameCount int) ScoreCard {
 	scoreCard := ScoreCard{}
+	// fmt.Println(scoreCard)
 
 	for i := 0; i < gameCount; i++ {
-		fmt.Printf("%d  ", i)
-		fmt.Println(scoreCard)
-		sc := simulateGame(game.SimulateTurn)
+		sc := simulateGame(simulateTurn)
 		scoreCard.player1WinCount += sc.player1WinCount
 		scoreCard.player2WinCount += sc.player2WinCount
+		fmt.Printf("%d  ", i)
+		fmt.Println(sc)
 	}
 
 	return scoreCard
@@ -106,6 +107,6 @@ func main() {
 	// game.SimulateGame(game.SimulateTurn)
 	// fmt.Println(game.scoreCard)
 
-	sc := game.SimulateMultipleGames(game.SimulateGame, 10)
+	sc := game.SimulateMultipleGames(game.SimulateTurn, game.SimulateGame, 10)
 	fmt.Println(sc)
 }
