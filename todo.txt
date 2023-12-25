@@ -1,0 +1,1 @@
+1. When specifying simulateturn or ssmth in function parameters, use type alias for function signs to avoid making it look so complicated

@@ -15,20 +15,20 @@ func (d *DummyDiceSimulator) Generate() int {
 	return val
 }
 
-type DummyGameOfPig struct {
-	winScore Score
-	p1Strategy Score
-	p2Strategy Score
-	scoreCard ScoreCard
-}
+// type DummyGameOfPig struct {
+// 	winScore Score
+// 	p1Strategy Score
+// 	p2Strategy Score
+// 	scoreCard ScoreCard
+// }
 
-func(dummyGame *DummyGameOfPig) dummySimulateGame(s func(Score, NumGenerator) Score , p1, p2 Score, scoreCard *ScoreCard) {
-	if dummyGame.scoreCard.player1WinCount < 6 {
-		scoreCard.player1WinCount++
-		return
-	}
-	scoreCard.player2WinCount++
-}
+// func(dummyGame *DummyGameOfPig) dummySimulateGame(s func(Score, NumGenerator) Score , p1, p2 Score, scoreCard *ScoreCard) {
+// 	if dummyGame.scoreCard.player1WinCount < 6 {
+// 		scoreCard.player1WinCount++
+// 		return
+// 	}
+// 	scoreCard.player2WinCount++
+// }
 
 func TestSimulateTurn(t *testing.T) {
 	testCases := []struct{
@@ -59,36 +59,63 @@ func TestSimulateTurn(t *testing.T) {
 }
 
 func TestSimulateGame(t *testing.T) {
-	scoreCard := &ScoreCard{}
-	p1Strategy := Score(10)
-	p2Strategy := Score(15)
-
-	dummySimulateTurn := func(strategy Score, _ NumGenerator) Score {
-		if strategy == p1Strategy {
-			return Score(3)
-		} else if strategy == p2Strategy {
-			return Score(5)
-		}
-
-		return Score(0)
-	}
 	game := GameOfPig{
 		winScore: Score(100),
 		p1Strategy: Score(10),
 		p2Strategy: Score(15),
 		scoreCard: ScoreCard{},
 	}
-	game.simulateGame(dummySimulateTurn, scoreCard)
 
-	if scoreCard.player2WinCount != 1 {
-		t.Errorf("Expected player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", scoreCard.player1WinCount, scoreCard.player2WinCount)
+	dummySimulateTurn := func(strategy Score, _ NumGenerator) Score {
+		if strategy == game.p1Strategy {
+			return Score(3)
+		} else if strategy == game.p2Strategy {
+			return Score(5)
+		}
+
+		return Score(0)
+	}
+
+
+	game.SimulateGame(dummySimulateTurn)
+
+	if game.scoreCard.player2WinCount != 1 {
+		t.Errorf("Expected player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", game.scoreCard.player1WinCount, game.scoreCard.player2WinCount)
+	}
+
+	if game.scoreCard.player1WinCount != 0 {
+		t.Errorf("Didn't expected both players to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", game.scoreCard.player1WinCount, game.scoreCard.player2WinCount)
 	}
 }
 
 
-func TestSimulate10Games(t *testing.T) {
-	
-}
+// func TestSimulate10Games(t *testing.T) {
+// 	game := GameOfPig{
+// 		winScore: Score(100),
+// 		p1Strategy: Score(10),
+// 		p2Strategy: Score(15),
+// 		scoreCard: ScoreCard{},
+// 	}
+
+// 	gameCount := 10
+
+// 	dummySimulateGame := func(simulateTurn Turn) {
+// 		for i := 0; i < gameCount; i++ {
+
+// 		}
+// 	}
+
+// 	got := game.SimulateMultipleGames(gameCount)
+// 	want := &ScoreCard{player1WinCount: 3, player2WinCount: 7}
+
+// 	if got.player1WinCount != want.player1WinCount {
+// 		t.Errorf("Expected Player 1 to win %d times but won %d times", want.player1WinCount, got.player1WinCount)
+// 	}
+
+// 	if got.player2WinCount != want.player2WinCount {
+// 		t.Errorf("Expected Player 2 to win %d times but won %d times", got.player2WinCount, got.player2WinCount)
+// 	}
+// }
 
 // func TestSeriesOfGames(t *testing.T) {
 // 	game := DummyGameOfPig{
