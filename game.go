@@ -27,11 +27,12 @@ type GameOfPig struct {
 	p1Strategy Score
 	p2Strategy Score
 	scoreCard ScoreCard
+	gameCount int
 }
 
-// func(g GameOfPig) String() string {
-// 	return fmt.Sprintf("Holding at  %d vs Holding at  %d: wins: 3/10 (30.0%), losses: 7/10 (70.0%)", g.p1Strategy, g.p2Strategy)
-// }
+func(g GameOfPig) String() string {
+	return fmt.Sprintf("Holding at  %d vs Holding at  %d: wins: %d/%d (%0.2f%%), losses: %d/%d (%0.2f%%)", g.p1Strategy, g.p2Strategy, g.scoreCard.player1WinCount, g.gameCount, float64(g.scoreCard.player1WinCount)*100.00/float64(g.gameCount), g.scoreCard.player2WinCount, g.gameCount, float64(g.scoreCard.player2WinCount)*100.00/float64(g.gameCount))
+}
 
 type NumGenerator interface {
 	Generate() int
@@ -82,9 +83,9 @@ func(game *GameOfPig) SimulateGame(simulateTurn TurnFunc) ScoreCard {
 	}
 }
 
-func(game *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame GameFunc, gameCount int) ScoreCard {
+func(game *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame GameFunc) ScoreCard {
 	var scoreCard ScoreCard
-	for i := 0; i < gameCount; i++ {
+	for i := 0; i < game.gameCount; i++ {
 		scoreCard = simulateGame(simulateTurn)
 	}
 
@@ -98,6 +99,7 @@ func main() {
 		p1Strategy: Score(15),
 		p2Strategy: Score(20),
 		scoreCard: ScoreCard{},
+		gameCount: 10,
 	}
 
 	// scoreCard := simulateSeriesOfGames(game, gameCount)
@@ -106,6 +108,7 @@ func main() {
 	// game.SimulateGame(game.SimulateTurn)
 	// fmt.Println(game.scoreCard)
 
-	sc := game.SimulateMultipleGames(game.SimulateTurn, game.SimulateGame, 10)
-	fmt.Println(sc)
+	game.SimulateMultipleGames(game.SimulateTurn, game.SimulateGame)
+	fmt.Println(game)
+	// fmt.Println(game.scoreCard)
 }

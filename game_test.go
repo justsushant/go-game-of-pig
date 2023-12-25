@@ -95,24 +95,26 @@ func TestSimulateMultipleGames(t *testing.T) {
 		p1Strategy: Score(10),
 		p2Strategy: Score(15),
 		scoreCard: ScoreCard{},
+		gameCount: 3,
 	}
-	gameCount := 3
 	
-	var flag bool
+	var testFlag bool
+	testScoreCard := ScoreCard{}
 	dummySimulateTurn := func (_ Score, _ NumGenerator) Score {
 		return Score(0)
 	}
 	dummySimulateGame := func (_ TurnFunc) ScoreCard {
-		if flag {
-			flag = false
-			return ScoreCard{player1WinCount: 0, player2WinCount: 1}
+		if testFlag {
+			testFlag = false
+			testScoreCard.player2WinCount++
 		} else {
-			flag = true
-			return ScoreCard{player1WinCount: 1, player2WinCount: 0}
+			testFlag = true
+			testScoreCard.player1WinCount++
 		}
+		return testScoreCard
 	}
 
-	got := game.SimulateMultipleGames(dummySimulateTurn, dummySimulateGame, gameCount)
+	got := game.SimulateMultipleGames(dummySimulateTurn, dummySimulateGame)
 	want := ScoreCard{player1WinCount: 2, player2WinCount: 1}
 
 	if got.player1WinCount != want.player1WinCount {
