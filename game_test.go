@@ -48,7 +48,7 @@ func TestSimulateTurn(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 			game := GameOfPig{}
-			got := game.simulateTurn(tc.holdValue, dummyDie)
+			got := game.SimulateTurn(tc.holdValue, dummyDie)
 			want := tc.score
 
 			if got != want {
@@ -77,107 +77,49 @@ func TestSimulateGame(t *testing.T) {
 	}
 
 
-	game.SimulateGame(dummySimulateTurn)
+	got := game.SimulateGame(dummySimulateTurn)
+	want := ScoreCard{player1WinCount: 0, player2WinCount: 1}
 
-	if game.scoreCard.player2WinCount != 1 {
-		t.Errorf("Expected player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", game.scoreCard.player1WinCount, game.scoreCard.player2WinCount)
+	if got.player2WinCount != want.player2WinCount {
+		t.Errorf("Expected Player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", got.player1WinCount, got.player2WinCount)
 	}
 
-	if game.scoreCard.player1WinCount != 0 {
-		t.Errorf("Didn't expected both players to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", game.scoreCard.player1WinCount, game.scoreCard.player2WinCount)
+	if got.player1WinCount != want.player1WinCount {
+		t.Errorf("Expected Player 1 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", got.player1WinCount, got.player2WinCount)
 	}
 }
 
-
-// func TestSimulate10Games(t *testing.T) {
-// 	game := GameOfPig{
-// 		winScore: Score(100),
-// 		p1Strategy: Score(10),
-// 		p2Strategy: Score(15),
-// 		scoreCard: ScoreCard{},
-// 	}
-
-// 	gameCount := 10
-
-// 	dummySimulateGame := func(simulateTurn Turn) {
-// 		for i := 0; i < gameCount; i++ {
-
-// 		}
-// 	}
-
-// 	got := game.SimulateMultipleGames(gameCount)
-// 	want := &ScoreCard{player1WinCount: 3, player2WinCount: 7}
-
-// 	if got.player1WinCount != want.player1WinCount {
-// 		t.Errorf("Expected Player 1 to win %d times but won %d times", want.player1WinCount, got.player1WinCount)
-// 	}
-
-// 	if got.player2WinCount != want.player2WinCount {
-// 		t.Errorf("Expected Player 2 to win %d times but won %d times", got.player2WinCount, got.player2WinCount)
-// 	}
-// }
-
-// func TestSeriesOfGames(t *testing.T) {
-// 	game := DummyGameOfPig{
-// 		winScore: Score(100),
-// 		p1Strategy: Score(10),
-// 		p2Strategy: Score(15),
-// 		scoreCard: ScoreCard{},
-// 	}
-
-// 	gameCount := 10
+func TestSimulateMultipleGames(t *testing.T) {
+	game := GameOfPig{
+		winScore: Score(100),
+		p1Strategy: Score(10),
+		p2Strategy: Score(15),
+		scoreCard: ScoreCard{},
+	}
+	gameCount := 3
 	
-// 	got := simulateSeriesOfGames(game, gameCount)
-// 	want := ScoreCard{player1WinCount: 6, player2WinCount: 4}
-
-// 	if got != want {
-// 		t.Errorf("Expected ScoreCard => Player1: %d\tPlayer2: %d\nGot ScoreCard => Player1: %d\tPlayer2: %d", want.player1WinCount, want.player2WinCount, got.player1WinCount, got.player2WinCount)
-// 	}
-// }
-// func TestSeriesOfGames(t *testing.T) {
-// 	gameCount := 10
-// 	// scoreCard := &ScoreCard{}
-// 	// winScore := Score(100)
-// 	p1Strategy := Score(10)
-// 	p2Strategy := Score(15)
-
-// 	game := GameOfPig{
-// 		winScore: Score(100),
-// 		p1Strategy: p1Strategy,
-// 		p2Strategy: p2Strategy,
-// 		scoreCard: ScoreCard{},
-// 	}
-
-// 	game.simulateGame = func(s func(Score, NumGenerator) Score , p1, p2 Score, scoreCard *ScoreCard) {
-// 			if scoreCard.player1WinCount < 6 {
-// 				scoreCard.player1WinCount++
-// 				return
-// 			}
-// 			scoreCard.player2WinCount++
-// 	}
-
-// 	// func (g *GameOfPig) simulateGame(s func(Score, NumGenerator) Score , p1, p2 Score, scoreCard *ScoreCard) {
-// 	// 	if g.scoreCard.player1WinCount < 6 {
-// 	// 		scoreCard.player1WinCount++
-// 	// 		return
-// 	// 	}
-// 	// 	scoreCard.player2WinCount++
-// 	// }
-
-// 	// dummySimulateGame := func(s func(Score, NumGenerator) Score , p1, p2 Score, scoreCard *ScoreCard) {
-// 	// 	if scoreCard.player1WinCount < 6 {
-// 	// 		scoreCard.player1WinCount++
-// 	// 		return
-// 	// 	}
-// 	// 	scoreCard.player2WinCount++
-// 	// }
-	
-// 	got := simulateSeriesOfGames(game, gameCount)
-// 	want := ScoreCard{player1WinCount: 6, player2WinCount: 4}
-
-// 	if got != want {
-// 		t.Errorf("Expected ScoreCard => Player1: %d\tPlayer2: %d\nGot ScoreCard => Player1: %d\tPlayer2: %d", want.player1WinCount, want.player2WinCount, got.player1WinCount, got.player2WinCount)
-// 	}
-// }
+	var flag bool
+	dummySimulateGame := func (_ TurnFunc) ScoreCard {
+		if flag {
+			flag = false
+			return ScoreCard{player1WinCount: 0, player2WinCount: 1}
+		} else {
+			flag = true
+			return ScoreCard{player1WinCount: 1, player2WinCount: 0}
+		}
+	}
 
 
+	got := game.SimulateMultipleGames(dummySimulateGame, gameCount)
+	want := ScoreCard{player1WinCount: 2, player2WinCount: 1}
+
+	if got.player1WinCount != want.player1WinCount {
+		t.Errorf("Expected Player 1 to win %d times, but won %d times", want.player1WinCount, got.player1WinCount)
+	}
+
+	if got.player2WinCount != want.player2WinCount {
+		t.Errorf("Expected Player 2 to win %d times, but won %d times", want.player2WinCount, got.player2WinCount)
+	}
+
+
+}

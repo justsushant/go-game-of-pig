@@ -19,7 +19,8 @@ func(s ScoreCard) String() string {
 	return fmt.Sprintf("Player1: %d, Player2: %d", s.player1WinCount, s.player2WinCount)
 }
 
-type Turn func(Score, NumGenerator) Score
+type TurnFunc func(Score, NumGenerator) Score
+type GameFunc func(TurnFunc) ScoreCard
 
 type GameOfPig struct {
 	winScore Score
@@ -40,7 +41,7 @@ func (d *DiceSimulator) Generate() int {
 	return rand.Intn(7)
 }
 
-func(game GameOfPig) simulateTurn(pStrategy Score, numGen NumGenerator) Score {
+func(game GameOfPig) SimulateTurn(pStrategy Score, numGen NumGenerator) Score {
 	var turnTotal Score
 
 	for turnTotal <= pStrategy {
@@ -56,7 +57,7 @@ func(game GameOfPig) simulateTurn(pStrategy Score, numGen NumGenerator) Score {
 	return Score(turnTotal)
 }
 
-func(game *GameOfPig) SimulateGame(simulateTurn Turn) {
+func(game *GameOfPig) SimulateGame(simulateTurn TurnFunc) ScoreCard {
 	numGen := &DiceSimulator{seed: time.Now().UnixNano()}
 	var p1Score, p2Score Score
 
@@ -65,35 +66,31 @@ func(game *GameOfPig) SimulateGame(simulateTurn Turn) {
 
 		if p1Score >= winScore {
 			game.scoreCard.player1WinCount++
-			return
+			return game.scoreCard
 		}
 
 		p2Score += simulateTurn(game.p2Strategy, numGen)
 
 		if p2Score >= winScore {
 			game.scoreCard.player2WinCount++
-			return
+			return game.scoreCard
 		}
 	}
 }
 
-// func(game *GameOfPig) SimulateMultipleGames(gameCount int) *ScoreCard {
-// 	return &ScoreCard{
-// 		player1WinCount: 0,
-// 		player2WinCount: 0,
-// 	}
-// }
+func(game *GameOfPig) SimulateMultipleGames(simulateGame GameFunc, gameCount int) ScoreCard {
+	scoreCard := ScoreCard{}
 
-// // func(game *GameOfPig) simulateSeriesOfGames(gameCount int, p1Strategy, p2Strategy Score, simulateGame func(func(Score, NumGenerator) Score, Score, Score, *ScoreCard)) ScoreCard {
-// func simulateSeriesOfGames(game GameOfPig, gameCount int) ScoreCard {
-// 	// scoreCard := ScoreCard{}
+	for i := 0; i < gameCount; i++ {
+		fmt.Printf("%d  ", i)
+		fmt.Println(scoreCard)
+		sc := simulateGame(game.SimulateTurn)
+		scoreCard.player1WinCount += sc.player1WinCount
+		scoreCard.player2WinCount += sc.player2WinCount
+	}
 
-// 	for i := 0; i < gameCount; i++ {
-// 		game.simulateGame(game.simulateTurn, &game.scoreCard)
-// 	}
-
-// 	return game.scoreCard
-// }
+	return scoreCard
+}
 
 func main() {
 	game := GameOfPig {
@@ -103,11 +100,12 @@ func main() {
 		scoreCard: ScoreCard{},
 	}
 
-	// gameCount := 10
-
 	// scoreCard := simulateSeriesOfGames(game, gameCount)
 	// fmt.Println(scoreCard)
 
-	game.SimulateGame(game.simulateTurn)
-	fmt.Println(game.scoreCard)
+	// game.SimulateGame(game.SimulateTurn)
+	// fmt.Println(game.scoreCard)
+
+	sc := game.SimulateMultipleGames(game.SimulateGame, 10)
+	fmt.Println(sc)
 }
