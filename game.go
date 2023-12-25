@@ -29,6 +29,10 @@ type GameOfPig struct {
 	scoreCard ScoreCard
 }
 
+// func(g GameOfPig) String() string {
+// 	return fmt.Sprintf("Holding at  %d vs Holding at  %d: wins: 3/10 (30.0%), losses: 7/10 (70.0%)", g.p1Strategy, g.p2Strategy)
+// }
+
 type NumGenerator interface {
 	Generate() int
 }
@@ -79,19 +83,14 @@ func(game *GameOfPig) SimulateGame(simulateTurn TurnFunc) ScoreCard {
 }
 
 func(game *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame GameFunc, gameCount int) ScoreCard {
-	scoreCard := ScoreCard{}
-	// fmt.Println(scoreCard)
-
+	var scoreCard ScoreCard
 	for i := 0; i < gameCount; i++ {
-		sc := simulateGame(simulateTurn)
-		scoreCard.player1WinCount += sc.player1WinCount
-		scoreCard.player2WinCount += sc.player2WinCount
-		fmt.Printf("%d  ", i)
-		fmt.Println(sc)
+		scoreCard = simulateGame(simulateTurn)
 	}
 
 	return scoreCard
 }
+
 
 func main() {
 	game := GameOfPig {
