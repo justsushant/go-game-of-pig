@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"reflect"
 )
 
 type DummyDiceSimulator struct {
@@ -14,21 +15,6 @@ func (d *DummyDiceSimulator) Generate() int {
 	d.index++
 	return val
 }
-
-// type DummyGameOfPig struct {
-// 	winScore Score
-// 	p1Strategy Score
-// 	p2Strategy Score
-// 	scoreCard ScoreCard
-// }
-
-// func(dummyGame *DummyGameOfPig) dummySimulateGame(s func(Score, NumGenerator) Score , p1, p2 Score, scoreCard *ScoreCard) {
-// 	if dummyGame.scoreCard.player1WinCount < 6 {
-// 		scoreCard.player1WinCount++
-// 		return
-// 	}
-// 	scoreCard.player2WinCount++
-// }
 
 func TestSimulateTurn(t *testing.T) {
 	testCases := []struct{
@@ -78,14 +64,14 @@ func TestSimulateGame(t *testing.T) {
 
 
 	got := game.SimulateGame(dummySimulateTurn)
-	want := ScoreCard{player1WinCount: 0, player2WinCount: 1}
+	want := ScoreCard{p1WinCount: 0, p2WinCount: 1}
 
-	if got.player2WinCount != want.player2WinCount {
-		t.Errorf("Expected Player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", got.player1WinCount, got.player2WinCount)
+	if got.p2WinCount != want.p2WinCount {
+		t.Errorf("Expected Player 2 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", got.p1WinCount, got.p2WinCount)
 	}
 
-	if got.player1WinCount != want.player1WinCount {
-		t.Errorf("Expected Player 1 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", got.player1WinCount, got.player2WinCount)
+	if got.p1WinCount != want.p1WinCount {
+		t.Errorf("Expected Player 1 to win but got the following scorecard\nPlayer1: %d\tPlayer2: %d", got.p1WinCount, got.p2WinCount)
 	}
 }
 
@@ -106,24 +92,78 @@ func TestSimulateMultipleGames(t *testing.T) {
 	dummySimulateGame := func (_ TurnFunc) ScoreCard {
 		if testFlag {
 			testFlag = false
-			testScoreCard.player2WinCount++
+			testScoreCard.p2WinCount++
 		} else {
 			testFlag = true
-			testScoreCard.player1WinCount++
+			testScoreCard.p1WinCount++
 		}
 		return testScoreCard
 	}
 
 	got := game.SimulateMultipleGames(dummySimulateTurn, dummySimulateGame)
-	want := ScoreCard{player1WinCount: 2, player2WinCount: 1}
+	want := ScoreCard{p1WinCount: 2, p2WinCount: 1}
 
-	if got.player1WinCount != want.player1WinCount {
-		t.Errorf("Expected Player 1 to win %d times, but won %d times", want.player1WinCount, got.player1WinCount)
+	if got.p1WinCount != want.p1WinCount {
+		t.Errorf("Expected Player 1 to win %d times, but won %d times", want.p1WinCount, got.p1WinCount)
 	}
 
-	if got.player2WinCount != want.player2WinCount {
-		t.Errorf("Expected Player 2 to win %d times, but won %d times", want.player2WinCount, got.player2WinCount)
+	if got.p2WinCount != want.p2WinCount {
+		t.Errorf("Expected Player 2 to win %d times, but won %d times", want.p2WinCount, got.p2WinCount)
+	}
+}
+
+func TestStringerForGame(t *testing.T) {
+	game := GameOfPig{
+		winScore: 100,
+		p1Strategy: Score(10),
+		p2Strategy: Score(15),
+		scoreCard: ScoreCard{
+			p1WinCount: 3,
+			p2WinCount: 7,
+		},
+		gameCount: 10,
 	}
 
+	got := game.String()
+	want := "Holding at  10 vs Holding at  15: wins: 3/10 (30.0%), losses: 7/10 (70.0%)"
 
+	if got != want {
+		t.Errorf("Expected string '%s' but got '%s'", want, got)
+	}
+}
+
+func TestNewGameOfPig(t *testing.T) {
+	winScore := 100
+	p1Strategy := 10
+	p2Strategy := 15
+	gameCount := 10
+
+	got := NewGameOfPig(p1Strategy, p2Strategy, winScore, gameCount)
+	want := GameOfPig{
+		p1Strategy :10, 
+		p2Strategy: 15, 
+		winScore: 100,
+		gameCount: 10,
+		scoreCard: ScoreCard{},
+	}
+
+	if got.p1Strategy != want.p1Strategy {
+		t.Errorf("Expected Player 1 Strategy to be %d but got %v", want.p1Strategy, got.p1Strategy)
+	}
+
+	if got.p2Strategy != want.p2Strategy {
+        t.Errorf("Expected Player 2 Strategy to be %d but got %v", want.p2Strategy, got.p2Strategy)
+    }
+
+    if got.winScore != want.winScore {
+        t.Errorf("Expected Win Score to be %d but got %v", want.winScore, got.winScore)
+    }
+
+    if got.gameCount != want.gameCount {
+        t.Errorf("Expected Game Count to be %d but got %v", want.gameCount, got.gameCount)
+    }
+
+	if !reflect.DeepEqual(got.scoreCard, want.scoreCard) {
+        t.Errorf("Expected ScoreCard to be %v but got %v", want.scoreCard, got.scoreCard)
+    }
 }

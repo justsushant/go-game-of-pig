@@ -6,17 +6,17 @@ import (
 	"math/rand"
 )
 
-const winScore = Score(100)
+const sidesOfDice = 6
 
 type Score int
 
 type ScoreCard struct {
-	player1WinCount Score
-	player2WinCount Score
+	p1WinCount Score
+	p2WinCount Score
 }
 
 func(s ScoreCard) String() string {
-	return fmt.Sprintf("Player1: %d, Player2: %d", s.player1WinCount, s.player2WinCount)
+	return fmt.Sprintf("Player1: %d, Player2: %d", s.p1WinCount, s.p2WinCount)
 }
 
 type TurnFunc func(Score, NumGenerator) Score
@@ -30,8 +30,18 @@ type GameOfPig struct {
 	gameCount int
 }
 
+func NewGameOfPig(p1Strategy, p2Strategy, winScore, gameCount int) GameOfPig {
+	return GameOfPig{
+		winScore: Score(winScore),
+		p1Strategy: Score(p1Strategy),
+		p2Strategy: Score(p2Strategy),
+		gameCount: gameCount,
+		scoreCard: ScoreCard{},
+	}
+}
+
 func(g GameOfPig) String() string {
-	return fmt.Sprintf("Holding at  %d vs Holding at  %d: wins: %d/%d (%0.2f%%), losses: %d/%d (%0.2f%%)", g.p1Strategy, g.p2Strategy, g.scoreCard.player1WinCount, g.gameCount, float64(g.scoreCard.player1WinCount)*100.00/float64(g.gameCount), g.scoreCard.player2WinCount, g.gameCount, float64(g.scoreCard.player2WinCount)*100.00/float64(g.gameCount))
+	return fmt.Sprintf("Holding at  %d vs Holding at  %d: wins: %d/%d (%0.1f%%), losses: %d/%d (%0.1f%%)", g.p1Strategy, g.p2Strategy, g.scoreCard.p1WinCount, g.gameCount, float64(g.scoreCard.p1WinCount)*100.00/float64(g.gameCount), g.scoreCard.p2WinCount, g.gameCount, float64(g.scoreCard.p2WinCount)*100.00/float64(g.gameCount))
 }
 
 type NumGenerator interface {
@@ -46,7 +56,7 @@ func (d *DiceSimulator) Generate() int {
 	return rand.Intn(7)
 }
 
-func(game GameOfPig) SimulateTurn(pStrategy Score, numGen NumGenerator) Score {
+func(g GameOfPig) SimulateTurn(pStrategy Score, numGen NumGenerator) Score {
 	var turnTotal Score
 
 	for turnTotal <= pStrategy {
@@ -62,30 +72,30 @@ func(game GameOfPig) SimulateTurn(pStrategy Score, numGen NumGenerator) Score {
 	return Score(turnTotal)
 }
 
-func(game *GameOfPig) SimulateGame(simulateTurn TurnFunc) ScoreCard {
+func(g *GameOfPig) SimulateGame(simulateTurn TurnFunc) ScoreCard {
 	numGen := &DiceSimulator{seed: time.Now().UnixNano()}
 	var p1Score, p2Score Score
 
 	for {
-		p1Score += simulateTurn(game.p1Strategy, numGen)
+		p1Score += simulateTurn(g.p1Strategy, numGen)
 
-		if p1Score >= winScore {
-			game.scoreCard.player1WinCount++
-			return game.scoreCard
+		if p1Score >= g.winScore {
+			g.scoreCard.p1WinCount++
+			return g.scoreCard
 		}
 
-		p2Score += simulateTurn(game.p2Strategy, numGen)
+		p2Score += simulateTurn(g.p2Strategy, numGen)
 
-		if p2Score >= winScore {
-			game.scoreCard.player2WinCount++
-			return game.scoreCard
+		if p2Score >= g.winScore {
+			g.scoreCard.p2WinCount++
+			return g.scoreCard
 		}
 	}
 }
 
-func(game *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame GameFunc) ScoreCard {
+func(g *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame GameFunc) ScoreCard {
 	var scoreCard ScoreCard
-	for i := 0; i < game.gameCount; i++ {
+	for i := 0; i < g.gameCount; i++ {
 		scoreCard = simulateGame(simulateTurn)
 	}
 
@@ -94,21 +104,8 @@ func(game *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame 
 
 
 func main() {
-	game := GameOfPig {
-		winScore: Score(100),
-		p1Strategy: Score(15),
-		p2Strategy: Score(20),
-		scoreCard: ScoreCard{},
-		gameCount: 10,
-	}
+	g := NewGameOfPig(15, 20, 100, 10)
+	g.SimulateMultipleGames(g.SimulateTurn, g.SimulateGame)
 
-	// scoreCard := simulateSeriesOfGames(game, gameCount)
-	// fmt.Println(scoreCard)
-
-	// game.SimulateGame(game.SimulateTurn)
-	// fmt.Println(game.scoreCard)
-
-	game.SimulateMultipleGames(game.SimulateTurn, game.SimulateGame)
-	fmt.Println(game)
-	// fmt.Println(game.scoreCard)
+	fmt.Println(g)
 }
