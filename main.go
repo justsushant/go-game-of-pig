@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -40,8 +39,6 @@ func parseBothArguments(p1, p2 string) ([]int, []int, error) {
 	if err2 != nil {
 		return nil, nil, fmt.Errorf("error parsing p2: %v", err2)
 	}
-
-	nums1, nums2 = removeCommonElement(nums1, nums2)
 	return nums1, nums2, nil
 }
 
@@ -75,16 +72,4 @@ func parseSingleArgument(arg string) ([]int, error) {
 		}
 		return []int{num}, nil
 	}
-}
-
-func removeCommonElement(nums1, nums2 []int) ([]int, []int) {
-	var slice2 []int
-
-	for _, num := range nums2 {
-		if !slices.Contains(nums1, num) {
-			slice2 = append(slice2, num)
-		}
-	}
-
-	return nums1, slice2
 }

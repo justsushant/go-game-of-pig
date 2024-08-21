@@ -50,7 +50,7 @@ func TestSimulateGame(t *testing.T) {
 		winscore:   100,
 		p1Strategy: 10,
 		p2Strategy: 15,
-		scoreCard:  scoreCard{},
+		ScoreCard:  ScoreCard{},
 	}
 
 	dummySimulateTurn := func(strategy int) int {
@@ -64,14 +64,14 @@ func TestSimulateGame(t *testing.T) {
 	}
 
 	got := game.SimulateGame(dummySimulateTurn)
-	want := scoreCard{p1WinCount: 0, p2WinCount: 1}
+	want := ScoreCard{P1WinCount: 0, P2WinCount: 1}
 
-	if got.p2WinCount != want.p2WinCount {
-		t.Errorf("Expected Player 2 to win but got the following scoreCard\nPlayer1: %d\tPlayer2: %d", got.p1WinCount, got.p2WinCount)
+	if got.P2WinCount != want.P2WinCount {
+		t.Errorf("Expected Player 2 to win but got the following ScoreCard\nPlayer1: %d\tPlayer2: %d", got.P1WinCount, got.P2WinCount)
 	}
 
-	if got.p1WinCount != want.p1WinCount {
-		t.Errorf("Expected Player 1 to win but got the following scoreCard\nPlayer1: %d\tPlayer2: %d", got.p1WinCount, got.p2WinCount)
+	if got.P1WinCount != want.P1WinCount {
+		t.Errorf("Expected Player 1 to win but got the following ScoreCard\nPlayer1: %d\tPlayer2: %d", got.P1WinCount, got.P2WinCount)
 	}
 }
 
@@ -80,35 +80,35 @@ func TestSimulateMultipleGames(t *testing.T) {
 		winscore:   100,
 		p1Strategy: 10,
 		p2Strategy: 15,
-		scoreCard:  scoreCard{},
+		ScoreCard:  ScoreCard{},
 		gameCount:  3,
 	}
 
 	var testFlag bool
-	testscoreCard := scoreCard{}
+	testScoreCard := ScoreCard{}
 	dummySimulateTurn := func(_ int) int {
 		return 0
 	}
-	dummySimulateGame := func(_ TurnFunc) scoreCard {
+	dummySimulateGame := func(_ TurnFunc) ScoreCard {
 		if testFlag {
 			testFlag = false
-			testscoreCard.p2WinCount++
+			testScoreCard.P2WinCount++
 		} else {
 			testFlag = true
-			testscoreCard.p1WinCount++
+			testScoreCard.P1WinCount++
 		}
-		return testscoreCard
+		return testScoreCard
 	}
 
 	got := game.SimulateMultipleGames(dummySimulateTurn, dummySimulateGame)
-	want := scoreCard{p1WinCount: 2, p2WinCount: 1}
+	want := ScoreCard{P1WinCount: 2, P2WinCount: 1}
 
-	if got.p1WinCount != want.p1WinCount {
-		t.Errorf("Expected Player 1 to win %d times, but won %d times", want.p1WinCount, got.p1WinCount)
+	if got.P1WinCount != want.P1WinCount {
+		t.Errorf("Expected Player 1 to win %d times, but won %d times", want.P1WinCount, got.P1WinCount)
 	}
 
-	if got.p2WinCount != want.p2WinCount {
-		t.Errorf("Expected Player 2 to win %d times, but won %d times", want.p2WinCount, got.p2WinCount)
+	if got.P2WinCount != want.P2WinCount {
+		t.Errorf("Expected Player 2 to win %d times, but won %d times", want.P2WinCount, got.P2WinCount)
 	}
 }
 
@@ -117,9 +117,9 @@ func TestStringerForGame(t *testing.T) {
 		winscore:   100,
 		p1Strategy: 10,
 		p2Strategy: 15,
-		scoreCard: scoreCard{
-			p1WinCount: 3,
-			p2WinCount: 7,
+		ScoreCard: ScoreCard{
+			P1WinCount: 3,
+			P2WinCount: 7,
 		},
 		gameCount: 10,
 	}
@@ -142,7 +142,7 @@ func TestNewGameOfPig(t *testing.T) {
 		p2Strategy: 15,
 		winscore:   100,
 		gameCount:  10,
-		scoreCard:  scoreCard{},
+		ScoreCard:  ScoreCard{},
 	}
 
 	if got.p1Strategy != want.p1Strategy {
@@ -161,7 +161,7 @@ func TestNewGameOfPig(t *testing.T) {
 		t.Errorf("Expected Game Count to be %d but got %v", want.gameCount, got.gameCount)
 	}
 
-	if !reflect.DeepEqual(got.scoreCard, want.scoreCard) {
-		t.Errorf("Expected scoreCard to be %v but got %v", want.scoreCard, got.scoreCard)
+	if !reflect.DeepEqual(got.ScoreCard, want.ScoreCard) {
+		t.Errorf("Expected ScoreCard to be %v but got %v", want.ScoreCard, got.ScoreCard)
 	}
 }

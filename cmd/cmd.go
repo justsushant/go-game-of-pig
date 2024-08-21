@@ -13,6 +13,10 @@ func Run(p1Strategy, p2Strategy []int, out io.Writer) {
 			p1 := p1Strategy[i]
 			p2 := p2Strategy[j]
 
+			if p1 == p2 {
+				continue
+			}
+
 			g := game.NewGameOfPig(p1, p2, game.NewDice())
 			g.SimulateMultipleGames(g.SimulateTurn, g.SimulateGame)
 			result := g.String()

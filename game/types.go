@@ -8,4 +8,4 @@ type Dice interface {
 
 type TurnFunc func(int) int
 
-type GameFunc func(TurnFunc) scoreCard
+type GameFunc func(TurnFunc) ScoreCard

@@ -29,11 +29,11 @@ func TestParseBothArguments(t *testing.T) {
 			expOut2: []int{15, 16, 17, 18, 19, 20},
 		},
 		{
-			name: "fixed for first and range for second overlapping",
-			arg1: "10",
+			name: "range for first and range for second",
+			arg1: "1-10",
 			arg2: "7-20",
-			expOut1: []int{10},
-			expOut2: []int{7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
+			expOut1: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			expOut2: []int{7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
 		},
 	}
 
