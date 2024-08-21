@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+const WinScore = 100
+const GameCount = 10
+
 // type to represent dice
 type diceSimulator struct{}
 
@@ -38,12 +41,12 @@ type GameOfPig struct {
 	gameCount  int
 }
 
-func NewGameOfPig(p1Strategy, p2Strategy, winscore, gameCount int, numGen Dice) GameOfPig {
+func NewGameOfPig(p1Strategy, p2Strategy int, numGen Dice) GameOfPig {
 	return GameOfPig{
-		winscore:   winscore,
+		winscore:   WinScore,
 		p1Strategy: p1Strategy,
 		p2Strategy: p2Strategy,
-		gameCount:  gameCount,
+		gameCount:  GameCount,
 		scoreCard:  scoreCard{},
 		numGen:     numGen,
 	}
@@ -53,9 +56,9 @@ func (g *GameOfPig) String() string {
 	return fmt.Sprintf("Holding at  %d vs Holding at  %d: wins: %d/%d (%0.1f%%), losses: %d/%d (%0.1f%%)", g.p1Strategy, g.p2Strategy, g.scoreCard.p1WinCount, g.gameCount, float64(g.scoreCard.p1WinCount)*100.00/float64(g.gameCount), g.scoreCard.p2WinCount, g.gameCount, float64(g.scoreCard.p2WinCount)*100.00/float64(g.gameCount))
 }
 
-func (g *GameOfPig) SimulateTurn(pStrategy int) int {
+func (g *GameOfPig) SimulateTurn(strategy int) int {
 	var turnTotal int
-	for turnTotal <= pStrategy {
+	for turnTotal <= strategy {
 		num := g.numGen.rollDice()
 		if num == 1 {
 			return 0
@@ -67,7 +70,7 @@ func (g *GameOfPig) SimulateTurn(pStrategy int) int {
 	return turnTotal
 }
 
-func (g *GameOfPig) SimulateGame(simulateTurn turnFunc) scoreCard {
+func (g *GameOfPig) SimulateGame(simulateTurn TurnFunc) scoreCard {
 	var p1score, p2score int
 	for {
 		p1score += simulateTurn(g.p1Strategy)
@@ -84,7 +87,7 @@ func (g *GameOfPig) SimulateGame(simulateTurn turnFunc) scoreCard {
 	}
 }
 
-func (g *GameOfPig) SimulateMultipleGames(simulateTurn turnFunc, simulateGame gameFunc) scoreCard {
+func (g *GameOfPig) SimulateMultipleGames(simulateTurn TurnFunc, simulateGame GameFunc) scoreCard {
 	var scoreCard scoreCard
 	for i := 0; i < g.gameCount; i++ {
 		scoreCard = simulateGame(simulateTurn)

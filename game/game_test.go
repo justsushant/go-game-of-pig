@@ -89,7 +89,7 @@ func TestSimulateMultipleGames(t *testing.T) {
 	dummySimulateTurn := func(_ int) int {
 		return 0
 	}
-	dummySimulateGame := func(_ turnFunc) scoreCard {
+	dummySimulateGame := func(_ TurnFunc) scoreCard {
 		if testFlag {
 			testFlag = false
 			testscoreCard.p2WinCount++
@@ -133,12 +133,10 @@ func TestStringerForGame(t *testing.T) {
 }
 
 func TestNewGameOfPig(t *testing.T) {
-	winscore := 100
 	p1Strategy := 10
 	p2Strategy := 15
-	gameCount := 10
 
-	got := NewGameOfPig(p1Strategy, p2Strategy, winscore, gameCount, &DummyDice{})
+	got := NewGameOfPig(p1Strategy, p2Strategy, &DummyDice{})
 	want := GameOfPig{
 		p1Strategy: 10,
 		p2Strategy: 15,

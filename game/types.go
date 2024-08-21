@@ -6,6 +6,6 @@ type Dice interface {
 	rollDice() int
 }
 
-type turnFunc func(int) int
+type TurnFunc func(int) int
 
-type gameFunc func(turnFunc) scoreCard
+type GameFunc func(TurnFunc) scoreCard
