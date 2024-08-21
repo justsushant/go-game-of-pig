@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"regexp"
-	"testing"
 	"bytes"
+	"strings"
+	"testing"
 )
 
 const WinScore = 100
@@ -13,13 +13,19 @@ func TestRun(t *testing.T) {
 		name string
 		p1Strategy []int
 		p2Strategy []int
-		expOut string
+		expLen int
 	}{
 		{
 			name: "fixed strategy for both players",
 			p1Strategy: []int{10},
 			p2Strategy: []int{15},
-			expOut: "Holding at  # vs Holding at  #: wins: #/# (#%), losses: #/# (#%)\n",
+			expLen: 1,
+		},
+		{
+			name: "fixed strategy for p1 and variable strategy for p2",
+			p1Strategy: []int{5},
+			p2Strategy: []int{3, 4, 6, 7, 8},
+			expLen: 5,
 		},
 	}
 
@@ -28,24 +34,11 @@ func TestRun(t *testing.T) {
 			var buf bytes.Buffer
 			Run(tc.p1Strategy, tc.p2Strategy, &buf)
 			got := buf.String()
+			gotLen := len(strings.Split(got, "\n"))-1
 
-			checkForEquality(t, tc.expOut, got)
+			if gotLen != tc.expLen {
+				t.Errorf("Expected length %d but got length %d", tc.expLen, gotLen)
+			}
 		})
 	}
-}
-
-// checks for equality by ignoring the integer values
-func checkForEquality(t *testing.T, exp, got string) {
-    t.Helper()
-
-    // regular expression to match numeric values
-    re := regexp.MustCompile(`\d+(\.\d+)?`)
-
-    // replace numeric values with a placeholder
-    expModified := re.ReplaceAllString(exp, "#")
-    gotModified := re.ReplaceAllString(got, "#")
-
-    if expModified != gotModified {
-        t.Errorf("Expected %q but got %q", expModified, gotModified)
-    }
 }

@@ -41,7 +41,7 @@ func parseBothArguments(p1, p2 string) ([]int, []int, error) {
 		return nil, nil, fmt.Errorf("error parsing p2: %v", err2)
 	}
 
-	nums1, nums2 = removeCommonElements(nums1, nums2)
+	nums1, nums2 = removeCommonElement(nums1, nums2)
 	return nums1, nums2, nil
 }
 
@@ -51,18 +51,22 @@ func parseSingleArgument(arg string) ([]int, error) {
 		if len(parts) != 2 {
 			return nil, fmt.Errorf("error: invalid range format")
 		}
+
 		start, err1 := strconv.Atoi(parts[0])
 		end, err2 := strconv.Atoi(parts[1])
+
 		if err1 != nil || err2 != nil {
 			return nil, fmt.Errorf("error: invalid number in range")
 		}
 		if start > end {
 			return nil, fmt.Errorf("error: start of range is greater than end")
 		}
+
 		var result []int
 		for i := start; i <= end; i++ {
 			result = append(result, i)
 		}
+		
 		return result, nil
 	} else {
 		num, err := strconv.Atoi(arg)
@@ -73,7 +77,7 @@ func parseSingleArgument(arg string) ([]int, error) {
 	}
 }
 
-func removeCommonElements(nums1, nums2 []int) ([]int, []int) {
+func removeCommonElement(nums1, nums2 []int) ([]int, []int) {
 	var slice2 []int
 
 	for _, num := range nums2 {
