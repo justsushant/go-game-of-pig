@@ -3,14 +3,15 @@ package game
 import (
 	"reflect"
 	"testing"
+	"strings"
 )
 
-type DummyDice struct {
+type dummyDice struct {
 	valueList []int
 	index     int
 }
 
-func (d *DummyDice) rollDice() int {
+func (d *dummyDice) rollDice() int {
 	val := d.valueList[d.index]
 	d.index++
 	return val
@@ -29,7 +30,7 @@ func TestSimulateTurn(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		dummyDie := &DummyDice{valueList: tc.valueList}
+		dummyDie := &dummyDice{valueList: tc.valueList}
 
 		t.Run(tc.name, func(t *testing.T) {
 			game := GameOfPig{
@@ -50,7 +51,7 @@ func TestSimulateGame(t *testing.T) {
 		winscore:   100,
 		p1Strategy: 10,
 		p2Strategy: 15,
-		ScoreCard:  ScoreCard{},
+		scoreCard:  ScoreCard{},
 	}
 
 	dummySimulateTurn := func(strategy int) int {
@@ -67,11 +68,11 @@ func TestSimulateGame(t *testing.T) {
 	want := ScoreCard{P1WinCount: 0, P2WinCount: 1}
 
 	if got.P2WinCount != want.P2WinCount {
-		t.Errorf("Expected Player 2 to win but got the following ScoreCard\nPlayer1: %d\tPlayer2: %d", got.P1WinCount, got.P2WinCount)
+		t.Errorf("Expected Player 2 to win but got the following scoreCard\nPlayer1: %d\tPlayer2: %d", got.P1WinCount, got.P2WinCount)
 	}
 
 	if got.P1WinCount != want.P1WinCount {
-		t.Errorf("Expected Player 1 to win but got the following ScoreCard\nPlayer1: %d\tPlayer2: %d", got.P1WinCount, got.P2WinCount)
+		t.Errorf("Expected Player 1 to win but got the following scoreCard\nPlayer1: %d\tPlayer2: %d", got.P1WinCount, got.P2WinCount)
 	}
 }
 
@@ -80,7 +81,6 @@ func TestSimulateMultipleGames(t *testing.T) {
 		winscore:   100,
 		p1Strategy: 10,
 		p2Strategy: 15,
-		ScoreCard:  ScoreCard{},
 		gameCount:  3,
 	}
 
@@ -117,7 +117,7 @@ func TestStringerForGame(t *testing.T) {
 		winscore:   100,
 		p1Strategy: 10,
 		p2Strategy: 15,
-		ScoreCard: ScoreCard{
+		scoreCard: ScoreCard{
 			P1WinCount: 3,
 			P2WinCount: 7,
 		},
@@ -136,13 +136,13 @@ func TestNewGameOfPig(t *testing.T) {
 	p1Strategy := 10
 	p2Strategy := 15
 
-	got := NewGameOfPig(p1Strategy, p2Strategy, &DummyDice{})
+	got := NewGameOfPig(p1Strategy, p2Strategy, &dummyDice{})
 	want := GameOfPig{
 		p1Strategy: 10,
 		p2Strategy: 15,
 		winscore:   100,
 		gameCount:  10,
-		ScoreCard:  ScoreCard{},
+		scoreCard:  ScoreCard{},
 	}
 
 	if got.p1Strategy != want.p1Strategy {
@@ -161,7 +161,31 @@ func TestNewGameOfPig(t *testing.T) {
 		t.Errorf("Expected Game Count to be %d but got %v", want.gameCount, got.gameCount)
 	}
 
-	if !reflect.DeepEqual(got.ScoreCard, want.ScoreCard) {
-		t.Errorf("Expected ScoreCard to be %v but got %v", want.ScoreCard, got.ScoreCard)
+	if !reflect.DeepEqual(got.scoreCard, want.scoreCard) {
+		t.Errorf("Expected scoreCard to be %v but got %v", want.scoreCard, got.scoreCard)
+	}
+}
+
+// will take map of strategy and scorecard
+// and return the summary
+func TestGetSummary(t *testing.T) {
+	scoreCard := map[int][]ScoreCard{
+		3: []ScoreCard{{P1WinCount: 6, P2WinCount: 4}, {P1WinCount: 5, P2WinCount: 5}, {P1WinCount: 3, P2WinCount: 7},},
+		4: []ScoreCard{{P1WinCount: 2, P2WinCount: 8}, {P1WinCount: 3, P2WinCount: 7}, {P1WinCount: 6, P2WinCount: 4},},
+		5: []ScoreCard{{P1WinCount: 8, P2WinCount: 2}, {P1WinCount: 6, P2WinCount: 4}, {P1WinCount: 3, P2WinCount: 7},},
+		6: []ScoreCard{{P1WinCount: 7, P2WinCount: 3}, {P1WinCount: 5, P2WinCount: 5}, {P1WinCount: 8, P2WinCount: 2},},
+	}
+
+	expOut := strings.Join([]string{
+		"Result: Wins, losses staying at k = 3: 14/30 (46.7%), 16/30 (53.3%)",
+		"Result: Wins, losses staying at k = 4: 11/30 (36.7%), 19/30 (63.3%)",
+		"Result: Wins, losses staying at k = 5: 17/30 (56.7%), 13/30 (43.3%)",
+		"Result: Wins, losses staying at k = 6: 20/30 (66.7%), 10/30 (33.3%)",
+	}, "\n")
+
+	got := GetSummary(scoreCard)
+
+	if expOut != got {
+		t.Errorf("Expected %q but got %q", expOut, got)
 	}
 }

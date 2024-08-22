@@ -24,8 +24,14 @@ func TestRun(t *testing.T) {
 		{
 			name: "fixed strategy for p1 and range strategy for p2",
 			p1Strategy: []int{5},
-			p2Strategy: []int{3, 4, 6, 7, 8},
+			p2Strategy: []int{3, 4, 5, 6, 7, 8},
 			expLen: 5,
+		},
+		{
+			name: "range strategy for p1 and range strategy for p2",
+			p1Strategy: []int{3, 4, 5, 6},
+			p2Strategy: []int{3, 4, 5, 6},
+			expLen: 4,
 		},
 	}
 
