@@ -2,10 +2,12 @@ package game
 
 import (
 	"reflect"
-	"testing"
 	"strings"
+	"testing"
 )
 
+// dummy to aid in the tests
+// loaded dice which rolls the numbers based on the valueList
 type dummyDice struct {
 	valueList []int
 	index     int
@@ -16,6 +18,7 @@ func (d *dummyDice) rollDice() int {
 	d.index++
 	return val
 }
+
 
 func TestSimulateTurn(t *testing.T) {
 	testCases := []struct {
@@ -54,6 +57,7 @@ func TestSimulateGame(t *testing.T) {
 		scoreCard:  ScoreCard{},
 	}
 
+	// dummy simulate turn function
 	dummySimulateTurn := func(strategy int) int {
 		if strategy == game.p1Strategy {
 			return 3
@@ -84,11 +88,9 @@ func TestSimulateMultipleGames(t *testing.T) {
 		gameCount:  3,
 	}
 
-	var testFlag bool
+	testFlag := false
 	testScoreCard := ScoreCard{}
-	dummySimulateTurn := func(_ int) int {
-		return 0
-	}
+	dummySimulateTurn := func(_ int) int {return 0} 
 	dummySimulateGame := func(_ TurnFunc) ScoreCard {
 		if testFlag {
 			testFlag = false
@@ -170,10 +172,10 @@ func TestNewGameOfPig(t *testing.T) {
 // and return the summary
 func TestGetSummary(t *testing.T) {
 	scoreCard := map[int][]ScoreCard{
-		3: []ScoreCard{{P1WinCount: 6, P2WinCount: 4}, {P1WinCount: 5, P2WinCount: 5}, {P1WinCount: 3, P2WinCount: 7},},
-		4: []ScoreCard{{P1WinCount: 2, P2WinCount: 8}, {P1WinCount: 3, P2WinCount: 7}, {P1WinCount: 6, P2WinCount: 4},},
-		5: []ScoreCard{{P1WinCount: 8, P2WinCount: 2}, {P1WinCount: 6, P2WinCount: 4}, {P1WinCount: 3, P2WinCount: 7},},
-		6: []ScoreCard{{P1WinCount: 7, P2WinCount: 3}, {P1WinCount: 5, P2WinCount: 5}, {P1WinCount: 8, P2WinCount: 2},},
+		3: {{P1WinCount: 6, P2WinCount: 4}, {P1WinCount: 5, P2WinCount: 5}, {P1WinCount: 3, P2WinCount: 7}},
+		4: {{P1WinCount: 2, P2WinCount: 8}, {P1WinCount: 3, P2WinCount: 7}, {P1WinCount: 6, P2WinCount: 4}},
+		5: {{P1WinCount: 8, P2WinCount: 2}, {P1WinCount: 6, P2WinCount: 4}, {P1WinCount: 3, P2WinCount: 7}},
+		6: {{P1WinCount: 7, P2WinCount: 3}, {P1WinCount: 5, P2WinCount: 5}, {P1WinCount: 8, P2WinCount: 2}},
 	}
 
 	expOut := strings.Join([]string{

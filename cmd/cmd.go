@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"io"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/one2n-go-bootcamp/game-of-pig/game"
@@ -28,7 +28,7 @@ func Run(p1Strategy, p2Strategy []int, out io.Writer) {
 			sc := g.SimulateMultipleGames(g.SimulateTurn, g.SimulateGame)
 			r := g.String()
 
-			// saving score in map
+			// saving score in map- strategy wise
 			if _, ok := score[p1]; !ok {
 				score[p1] = make([]game.ScoreCard, 0)
 			}

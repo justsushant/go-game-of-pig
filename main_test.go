@@ -5,33 +5,32 @@ import (
 	"testing"
 )
 
-
 func TestParseBothArguments(t *testing.T) {
-	tt := []struct{
-		name string
-		arg1 string
-		arg2 string
+	tt := []struct {
+		name    string
+		arg1    string
+		arg2    string
 		expOut1 []int
 		expOut2 []int
 	}{
 		{
-			name: "single number",
-			arg1: "10",
-			arg2: "15",
+			name:    "single number",
+			arg1:    "10",
+			arg2:    "15",
 			expOut1: []int{10},
 			expOut2: []int{15},
 		},
 		{
-			name: "fixed for first and range for second",
-			arg1: "10",
-			arg2: "15-20",
+			name:    "fixed for first and range for second",
+			arg1:    "10",
+			arg2:    "15-20",
 			expOut1: []int{10},
 			expOut2: []int{15, 16, 17, 18, 19, 20},
 		},
 		{
-			name: "range for first and range for second",
-			arg1: "1-10",
-			arg2: "7-20",
+			name:    "range for first and range for second",
+			arg1:    "1-10",
+			arg2:    "7-20",
 			expOut1: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 			expOut2: []int{7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
 		},

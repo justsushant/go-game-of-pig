@@ -15,6 +15,16 @@ func main() {
 	p2 := flag.String("p2", "", "Strategy of Second Player")
 	flag.Parse()
 
+	// if there are arguments, use them as p1 and p2
+	args := flag.Args()
+	if *p1 == "" && len(args) > 0 {
+		*p1 = args[0]
+	}
+	if *p2 == "" && len(args) > 1 {
+		*p2 = args[1]
+	}
+
+	// if args are missing, print default
 	if *p1 == "" || *p2 == "" {
 		flag.PrintDefaults()
 		return
@@ -43,6 +53,7 @@ func parseBothArguments(p1, p2 string) ([]int, []int, error) {
 }
 
 func parseSingleArgument(arg string) ([]int, error) {
+	// if arg is a range, like 21-100
 	if strings.Contains(arg, "-") {
 		parts := strings.Split(arg, "-")
 		if len(parts) != 2 {
@@ -63,7 +74,7 @@ func parseSingleArgument(arg string) ([]int, error) {
 		for i := start; i <= end; i++ {
 			result = append(result, i)
 		}
-		
+
 		return result, nil
 	} else {
 		num, err := strconv.Atoi(arg)
