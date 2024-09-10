@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -38,6 +39,7 @@ func TestRun(t *testing.T) {
 			var buf bytes.Buffer
 			Run(tc.p1Strategy, tc.p2Strategy, &buf)
 			got := buf.String()
+			fmt.Println(got)
 			gotLen := len(strings.Split(got, "\n")) - 1
 
 			if gotLen != tc.expLen {

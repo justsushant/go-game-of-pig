@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"log"
 	"strings"
 
 	"github.com/one2n-go-bootcamp/game-of-pig/game"
@@ -38,6 +39,8 @@ func Run(p1Strategy, p2Strategy []int, out io.Writer) {
 			result = append(result, r)
 		}
 	}
+
+	log.Println(result)
 
 	// if both strategies are range based, output the summary
 	if len(p1Strategy) > 1 && len(p2Strategy) > 1 {
